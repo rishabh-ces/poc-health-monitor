@@ -9,11 +9,15 @@ export type Device = {
   lastUpdated: string
 }
 
-export type DeviceTelemetry = {
+export type Connectivity = 'excellent' | 'good' | 'poor'
+
+export type Telemetry = {
+  temperature: number
+  battery: number
+  connectivity: Connectivity
+}
+
+export type DeviceTelemetry = Telemetry & {
   deviceId: string
   timestamp: string
-  battery: number
-  temperature: number
-  connectivity: 'excellent' | 'good' | 'poor'
-  alerts?: string[]
 }
