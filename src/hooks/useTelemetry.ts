@@ -1,8 +1,7 @@
-// src/hooks/useTelemetry.ts
-
 import { useState, useEffect } from 'react'
 import { fetchTelemetry } from '@/services/deviceAPI'
 import type { DeviceTelemetry } from '@/lib/types'
+import { DATA_FETCH_INTERVAL } from '@/lib/constants'
 
 const useTelemetry = (deviceId: string) => {
   const [telemetry, setTelemetry] = useState<DeviceTelemetry | null>(null)
@@ -10,31 +9,36 @@ const useTelemetry = (deviceId: string) => {
   const [error, setError] = useState<Error | null>(null)
 
   useEffect(() => {
-    let isMounted = true
+    let ignore = false
 
     const getTelemetry = async () => {
+      setIsLoading(true)
+      setError(null)
+
       try {
         const data = await fetchTelemetry(deviceId)
-        if (isMounted) {
+        if (!ignore) {
           setTelemetry(data)
         }
       } catch (err) {
-        if (isMounted) {
+        if (!ignore) {
           setError(
             err instanceof Error ? err : new Error('An unknown error occurred'),
           )
         }
       } finally {
-        if (isMounted) {
+        if (!ignore) {
           setIsLoading(false)
         }
       }
     }
 
     getTelemetry()
+    const intervalId = setInterval(getTelemetry, DATA_FETCH_INTERVAL)
 
     return () => {
-      isMounted = false
+      ignore = true
+      clearInterval(intervalId)
     }
   }, [deviceId])
 

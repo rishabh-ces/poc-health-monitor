@@ -1,4 +1,3 @@
-// tailwind.config.ts
 import type { Config } from 'tailwindcss'
 
 const config: Config = {
@@ -8,7 +7,15 @@ const config: Config = {
     './src/app/**/*.{js,ts,jsx,tsx,mdx}', // Ensure this line is present
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        brand: {
+          primary: '#0070f3',
+          success: '#17c964',
+          danger: '#f42525',
+        },
+      },
+    },
   },
   plugins: [],
 }

@@ -21,7 +21,6 @@ const generateMockTelemetry = (deviceId: string): DeviceTelemetry => {
     battery,
     temperature,
     connectivity,
-    alerts,
   }
 }
 

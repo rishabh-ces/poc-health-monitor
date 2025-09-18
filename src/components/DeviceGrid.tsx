@@ -1,13 +1,11 @@
-// src/components/DeviceGrid.tsx
-
 import { getDevices } from '@/lib/data'
-import DeviceCard from '@/components/DeviceCard'
+import DeviceCard from '@/components/DeviceCard/DeviceCard'
 
 export async function DeviceGrid() {
-  // This fetch will be caught by the Suspense boundary
-  const devices = await getDevices()
+  const devices = getDevices()
+  console.log({ devices })
 
-  // We can add an artificial delay to see the skeleton in development
+  // artificial delay to see the skeleton in development
   await new Promise((resolve) => setTimeout(resolve, 1500))
 
   return (

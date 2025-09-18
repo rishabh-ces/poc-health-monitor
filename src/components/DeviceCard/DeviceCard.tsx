@@ -1,17 +1,25 @@
 'use client'
 
 import type { Device } from '@/lib/types'
-import { StatusBadge } from './StatusBadge'
+import StatusBadge from '../StatusBadge/StatusBadge'
 import useTelemetry from '@/hooks/useTelemetry'
-import TelemetryStats from './TelemetryStats'
+import TelemetryStats from '../TelemetryStats'
+import { BATTERY_ALERT_THRESHOLD, TEMP_ALERT_THRESHOLD } from '@/lib/constants'
 
-const DeviceCard = ({ device }: { device: Device }) => {
-  const { telemetry, isLoading } = useTelemetry(device.id)
+const DeviceCard = ({
+  device,
+  telemetryOverride,
+}: {
+  device: Device
+  telemetryOverride?: { telemetry: any; isLoading: boolean }
+}) => {
+  const { telemetry, isLoading } = telemetryOverride ?? useTelemetry(device.id)
 
   const hasAlert =
     !isLoading &&
     telemetry &&
-    (telemetry.battery < 20 || telemetry.temperature > 45)
+    (telemetry.battery < BATTERY_ALERT_THRESHOLD ||
+      telemetry.temperature > TEMP_ALERT_THRESHOLD)
 
   return (
     <div
@@ -20,9 +28,13 @@ const DeviceCard = ({ device }: { device: Device }) => {
           ? 'border-red-500/50 ring-2 ring-red-500/20'
           : 'border-gray-200 dark:border-gray-800'
       } `}
+      role="group"
     >
       <div className="flex items-start justify-between">
-        <h2 className="text-base font-bold text-gray-800 dark:text-gray-100">
+        <h2
+          className="text-base font-bold text-gray-800 dark:text-gray-100"
+          aria-label="device name"
+        >
           {device.name}
         </h2>
         <StatusBadge status={device.status} />
