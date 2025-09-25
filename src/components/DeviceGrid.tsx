@@ -3,7 +3,6 @@ import DeviceCard from '@/components/DeviceCard/DeviceCard'
 
 export async function DeviceGrid() {
   const devices = getDevices()
-  console.log({ devices })
 
   // artificial delay to see the skeleton in development
   await new Promise((resolve) => setTimeout(resolve, 1500))

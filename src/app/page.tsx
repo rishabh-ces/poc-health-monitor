@@ -1,16 +1,7 @@
 import { Suspense } from 'react'
 import { DeviceGrid } from '@/components/DeviceGrid'
-import { DeviceCardSkeleton } from '@/components/DeviceCardSkeleton'
+import { DeviceGridSkeleton } from '@/components/DeviceGridSkeleton'
 import { DATA_FETCH_INTERVAL } from '@/lib/constants'
-
-// A component to render the skeleton grid
-const DeviceGridSkeleton = () => (
-  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-    {Array.from({ length: 12 }).map((_, i) => (
-      <DeviceCardSkeleton key={i} />
-    ))}
-  </div>
-)
 
 export default function DashboardPage() {
   return (
@@ -33,3 +24,5 @@ export default function DashboardPage() {
     </main>
   )
 }
+
+// use router & dark mode

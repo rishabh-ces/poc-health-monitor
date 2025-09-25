@@ -1,5 +1,3 @@
-import React from 'react'
-
 type Status = 'online' | 'offline' | 'error'
 
 const baseClasses = 'px-2 py-0.5 text-xs font-semibold rounded-full capitalize'
