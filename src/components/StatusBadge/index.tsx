@@ -1,4 +1,4 @@
-type Status = 'online' | 'offline' | 'error'
+import { Status } from '@/lib/types'
 
 const baseClasses = 'px-2 py-0.5 text-xs font-semibold rounded-full capitalize'
 
@@ -6,10 +6,12 @@ const statusClasses: Record<Status, string> = {
   online: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',
   offline: 'bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-300',
   error: 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300',
+  maintenance:
+    'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300',
 }
 
-const StatusBadge = ({ status }: { status: Status }) => (
-  <span className={`${baseClasses} ${statusClasses[status]}`}>{status}</span>
-)
-
-export default StatusBadge
+export default function StatusBadge({ status }: { status: Status }) {
+  return (
+    <span className={`${baseClasses} ${statusClasses[status]}`}>{status}</span>
+  )
+}

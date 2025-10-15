@@ -1,48 +1,56 @@
-import { useState, useEffect } from 'react'
-import { fetchTelemetry } from '@/services/deviceAPI'
-import type { DeviceTelemetry } from '@/lib/types'
+import { useState, useEffect, useCallback } from 'react'
+import { fetchDeviceTelemetry } from '@/services/deviceAPI'
 import { DATA_FETCH_INTERVAL } from '@/lib/constants'
+import type { DeviceTelemetry } from '@/lib/types'
 
 const useTelemetry = (deviceId: string) => {
   const [telemetry, setTelemetry] = useState<DeviceTelemetry | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
 
-  useEffect(() => {
-    let ignore = false
-
-    const getTelemetry = async () => {
-      setIsLoading(true)
-      setError(null)
-
-      try {
-        const data = await fetchTelemetry(deviceId)
-        if (!ignore) {
-          setTelemetry(data)
-        }
-      } catch (err) {
-        if (!ignore) {
-          setError(
-            err instanceof Error ? err : new Error('An unknown error occurred'),
-          )
-        }
-      } finally {
-        if (!ignore) {
-          setIsLoading(false)
-        }
-      }
-    }
-
-    getTelemetry()
-    const intervalId = setInterval(getTelemetry, DATA_FETCH_INTERVAL)
-
-    return () => {
-      ignore = true
-      clearInterval(intervalId)
+  // This is now the single source of truth for fetching data.
+  // It's wrapped in useCallback so it's stable between renders.
+  const getTelemetry = useCallback(async () => {
+    // Only set an error if the request fails. Don't clear existing data on a poll failure.
+    setError(null)
+    try {
+      const data = await fetchDeviceTelemetry(deviceId)
+      setTelemetry(data)
+    } catch (err) {
+      console.error(`Telemetry poll failed for ${deviceId}:`, err)
+      setError(
+        err instanceof Error ? err : new Error('An unknown error occurred'),
+      )
     }
   }, [deviceId])
 
-  return { telemetry, isLoading, error }
+  // Handles only the initial data load and manages the skeleton UI.
+  useEffect(() => {
+    let isMounted = true
+
+    const initialFetch = async () => {
+      setIsLoading(true)
+      await getTelemetry() // Call the main fetch function
+      if (isMounted) {
+        setIsLoading(false)
+      }
+    }
+
+    initialFetch()
+
+    return () => {
+      isMounted = false
+    }
+  }, [getTelemetry]) // Re-runs if deviceId changes (because getTelemetry changes)
+
+  // Handles the background polling interval.
+  useEffect(() => {
+    const intervalId = setInterval(getTelemetry, DATA_FETCH_INTERVAL)
+
+    return () => clearInterval(intervalId)
+  }, [getTelemetry])
+
+  return { telemetry, isLoading, error, refetch: getTelemetry }
 }
 
 export default useTelemetry

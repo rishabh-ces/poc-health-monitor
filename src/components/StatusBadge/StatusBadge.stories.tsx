@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from '@storybook/react'
-import StatusBadge from './StatusBadge'
+import type { Meta, StoryObj } from '@storybook/nextjs'
+import StatusBadge from '../StatusBadge'
 
 const meta: Meta<typeof StatusBadge> = {
   title: 'Components/StatusBadge',
@@ -7,21 +7,13 @@ const meta: Meta<typeof StatusBadge> = {
   tags: ['autodocs'],
   parameters: {
     layout: 'centered',
-    docs: {
-      description: {
-        component:
-          'A visual indicator badge to display the status of a device, such as "online", "offline", or "error".',
-      },
-    },
   },
   argTypes: {
     status: {
       control: 'select',
-      options: ['online', 'offline', 'error'],
-      description: 'The visual status of the badge.',
-      table: {
-        defaultValue: { summary: 'online' },
-      },
+      options: ['online', 'offline', 'error', 'maintenance'],
+      description:
+        'The status of the device, which determines the badge color and text.',
     },
   },
 }
@@ -30,7 +22,21 @@ export default meta
 type Story = StoryObj<typeof StatusBadge>
 
 /**
- * The default 'Online' state of the badge, indicating an active or connected status.
+ * A showcase of all available status badges for quick visual comparison.
+ */
+export const AllStatuses: Story = {
+  render: () => (
+    <div className="flex flex-col items-start gap-4 sm:flex-row">
+      <StatusBadge status="online" />
+      <StatusBadge status="offline" />
+      <StatusBadge status="error" />
+      <StatusBadge status="maintenance" />
+    </div>
+  ),
+}
+
+/**
+ * The 'Online' state, indicating an active or connected status.
  */
 export const Online: Story = {
   args: {
@@ -39,7 +45,7 @@ export const Online: Story = {
 }
 
 /**
- * The 'Offline' state of the badge, indicating an inactive or disconnected status.
+ * The 'Offline' state, indicating an inactive or disconnected status.
  */
 export const Offline: Story = {
   args: {
@@ -48,10 +54,19 @@ export const Offline: Story = {
 }
 
 /**
- * The 'Error' state of the badge, indicating a problem or failure.
+ * The 'Error' state, indicating a problem or failure.
  */
 export const Error: Story = {
   args: {
     status: 'error',
+  },
+}
+
+/**
+ * The 'Maintenance' state, for devices undergoing service.
+ */
+export const Maintenance: Story = {
+  args: {
+    status: 'maintenance',
   },
 }

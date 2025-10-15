@@ -1,6 +1,6 @@
 'use client'
 
-import type { Telemetry } from '@/lib/types'
+import type { DeviceTelemetry } from '@/lib/types'
 import {
   Thermometer,
   BatteryFull,
@@ -12,21 +12,26 @@ import {
 } from 'lucide-react'
 import { BATTERY_ALERT_THRESHOLD, TEMP_ALERT_THRESHOLD } from '@/lib/constants'
 
-const TelemetryStats = ({ telemetry }: { telemetry: Telemetry }) => {
+export default function TelemetryStats({
+  telemetry,
+}: {
+  telemetry: DeviceTelemetry
+}) {
   const getBatteryStatus = (batteryLevel: number) => {
     if (batteryLevel > 99) {
-      return { icon: BatteryFull, color: 'text-green-500', alert: 'Full' }
+      return { Icon: BatteryFull, color: 'text-green-500', alert: 'Full' }
     }
     if (batteryLevel > BATTERY_ALERT_THRESHOLD) {
-      return { icon: BatteryMedium, color: 'text-gray-500', alert: null }
+      return { Icon: BatteryMedium, color: 'text-gray-500', alert: null }
     }
-    return { icon: BatteryLow, color: 'text-red-500', alert: 'Low' }
+    return { Icon: BatteryLow, color: 'text-red-500', alert: 'Low' }
   }
 
-  const connectivityMap = {
-    excellent: { icon: SignalHigh, color: 'text-green-500' },
-    good: { icon: SignalMedium, color: 'text-yellow-500' },
-    poor: { icon: SignalLow, color: 'text-red-500' },
+  const connectivityMap: Record<string, { Icon: any; color: string }> = {
+    excellent: { Icon: SignalHigh, color: 'text-green-500' },
+    good: { Icon: SignalMedium, color: 'text-yellow-500' },
+    moderate: { Icon: SignalMedium, color: 'text-yellow-300' },
+    poor: { Icon: SignalLow, color: 'text-red-500' },
   }
 
   const batteryStatus = getBatteryStatus(telemetry.battery)
@@ -37,13 +42,16 @@ const TelemetryStats = ({ telemetry }: { telemetry: Telemetry }) => {
   const tempAlert =
     telemetry.temperature > TEMP_ALERT_THRESHOLD ? 'Overheating' : null
   const connectivityStatus =
-    connectivityMap[telemetry.connectivity] || connectivityMap.poor
+    connectivityMap[telemetry.signalStrength] || connectivityMap.poor
+
+  const BatteryIcon = batteryStatus.Icon
+  const ConnectivityIcon = connectivityStatus.Icon
 
   return (
     <div className="space-y-3 text-sm">
       {/* Battery */}
       <div className="flex items-center">
-        <batteryStatus.icon
+        <BatteryIcon
           className={`mr-2 h-4 w-4 ${batteryStatus.color}`}
           aria-label="battery level icon"
         />
@@ -58,7 +66,6 @@ const TelemetryStats = ({ telemetry }: { telemetry: Telemetry }) => {
           </span>
         )}
       </div>
-
       {/* Temperature */}
       <div className="flex items-center">
         <Thermometer
@@ -74,19 +81,16 @@ const TelemetryStats = ({ telemetry }: { telemetry: Telemetry }) => {
           </span>
         )}
       </div>
-
       {/* Connectivity */}
       <div className="flex items-center">
-        <connectivityStatus.icon
+        <ConnectivityIcon
           className={`mr-2 h-4 w-4 ${connectivityStatus.color}`}
           aria-label="connectivity icon"
         />
         <span className="font-medium text-gray-700 capitalize dark:text-gray-300">
-          {telemetry.connectivity}
+          {telemetry.signalStrength}
         </span>
       </div>
     </div>
   )
 }
-
-export default TelemetryStats

@@ -1,20 +1,21 @@
+export type Status = 'online' | 'offline' | 'error' | 'maintenance'
+type SignalStrength = 'good' | 'poor' | 'moderate' | 'excellent'
+
 export type Device = {
   id: string
   name: string
   location: string
-  status: 'online' | 'offline' | 'error'
+  status: Status
   battery: number // %
   temperature: number // °C
-  signalStrength: 'Good' | 'Poor' | 'Moderate' | 'Excellent'
+  signalStrength: SignalStrength
   lastUpdated: string
 }
-
-export type Connectivity = 'excellent' | 'good' | 'poor'
 
 export type Telemetry = {
   temperature: number
   battery: number
-  connectivity: Connectivity
+  signalStrength: SignalStrength
 }
 
 export type DeviceTelemetry = Telemetry & {
