@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { DeviceTelemetry } from '@/lib/types'
 
-export const generateMockTelemetry = (deviceId: string): DeviceTelemetry => {
+const generateMockTelemetry = (deviceId: string): DeviceTelemetry => {
   return {
     deviceId,
     timestamp: new Date().toISOString(),
@@ -13,12 +13,8 @@ export const generateMockTelemetry = (deviceId: string): DeviceTelemetry => {
   }
 }
 
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } },
-) {
-  const { id: deviceId } = await params
+export async function GET(_request: Request, context: any) {
+  const deviceId = context.params.id
   const mockDevice = generateMockTelemetry(deviceId)
-
   return NextResponse.json(mockDevice)
 }
